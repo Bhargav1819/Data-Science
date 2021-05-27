@@ -202,11 +202,54 @@ plt.title('Frequent chat timings')
               
 
 
+import numpy as np
+import pandas as pd
+
+df = pd.read_csv("F:\\Chrome Downloads\\bridge.csv",header=None)
+df.columns=['IDENTIF','RIVER', 'LOCATION', 'ERECTED', 'PURPOSE', 'LENGTH', 'LANES', 
+  'CLEAR-G', 'T-OR-D', 'MATERIAL', 'SPAN', 'REL-L', 'TYPE']
+
+df.replace('?', np.NaN, inplace=True) 
+df.isna().sum()
+dfc = df.columns[df.columns.str.contains("[NHS]$")] 
+df1 = df[dfc].dropna(axis=1, thresh=100) 
+df2 = df.drop(columns=dfc)
+df2[df1.columns] = df1[df1.columns] 
+#df2.info() 
+df2.dropna(thresh=2,inplace=True)
+df2.reset_index(drop=True,inplace=True)
+cols = df2.columns[df2.isnull().any()]
+df2[cols]=df2[cols].fillna(df2.mode().iloc[0]) 
+print(df2.isnull().sum())
+
+
+# =============================================================================
+# 
+# from sklearn.impute import SimpleImputer
+# SI = SimpleImputer(strategy="most_frequent", copy=False) 
+# SI.fit_transform(df2) 
+# df2.info()
+# 
+# =============================================================================
 
 
 
 
-
+import pandas as pd
+sys = ['s1','s1','s1','s1',
+        's2','s2','s2','s2']
+net_day = ['d1','d1','d2','d2',
+        'd1','d1','d2','d2']
+spd = [1.3, 11.4, 5.6, 12.3, 
+        6.2, 1.1, 20.0, 8.8]
+df = pd.DataFrame({'set_name':sys,
+                    'spd_per_day':net_day,
+                    'speed':spd})
+print(df)              
+new_df = df.groupby(["set_name","spd_per_day"]).median() 
+new_df.columns = pd.MultiIndex.from_arrays([["speed"], ["median"]]) 
+new_df=new_df.sort_values(by=("speed","median"))
+print(new_df)
 
 
 
